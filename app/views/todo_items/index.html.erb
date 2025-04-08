@@ -1,0 +1,77 @@
+<h1 class="mb-4">Your Todo List</h1>
+
+<%= form_with url: todo_items_path, method: :get, local: true, class: "row g-3 mb-4" do %>
+  <div class="col-md-4">
+    <%= label_tag :title, "Search by Title" %>
+    <%= text_field_tag :title, params[:title], class: "form-control" %>
+  </div>
+
+  <div class="col-md-3">
+    <%= label_tag :priority, "Filter by Priority" %>
+    <%= select_tag :priority, options_for_select([["All", ""], "High", "Medium", "Low"], params[:priority]), class: "form-select" %>
+  </div>
+
+  <div class="col-md-3">
+    <%= label_tag :due_date, "Due Before" %>
+    <%= date_field_tag :due_date, params[:due_date], class: "form-control" %>
+  </div>
+
+  <div class="col-md-2 d-flex align-items-end">
+    <%= submit_tag "Filter", class: "btn btn-primary w-100" %>
+  </div>
+<% end %>
+
+<div class="mb-3">
+  <%= link_to "➕ New Todo", new_todo_item_path, class: "btn btn-success" %>
+</div>
+
+<% if @todo_items.any? %>
+  <div class="table-responsive">
+    <table class="table table-bordered table-striped align-middle text-center">
+      <thead class="table-dark">
+        <tr>
+          <th>Title</th>
+          <th>Description</th>
+          <th>Priority</th>
+          <th>Due Date</th>
+          <th>Created At</th>
+          <th>Status</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% @todo_items.each do |todo| %>
+          <tr>
+            <td><strong><%= todo.title %></strong></td>
+            <td><%= truncate(todo.description, length: 50) %></td>
+            <td>
+              <% priority_class = case todo.priority.downcase
+                when "high" then "danger"
+                when "medium" then "warning"
+                when "low" then "success"
+                else "secondary"
+              end %>
+              <span class="badge bg-<%= priority_class %>"><%= todo.priority.capitalize %></span>
+            </td>
+            <td><%= todo.due_date.strftime("%b %d, %Y") %></td>
+            <td><%= todo.created_at.strftime("%b %d, %Y %I:%M %p") %></td>
+            <td>
+              <% if todo.completed %>
+                <span class="badge bg-success">Completed</span>
+              <% else %>
+                <span class="badge bg-secondary">Pending</span>
+              <% end %>
+            </td>
+            <td>
+              <%= link_to "Show", todo_item_path(todo), class: "btn btn-outline-primary btn-sm" %>
+              <%= link_to "Edit", edit_todo_item_path(todo), class: "btn btn-outline-warning btn-sm" %>
+              <%= link_to "Delete", todo_item_path(todo), method: :delete, data: { confirm: "Are you sure?" }, class: "btn btn-outline-danger btn-sm" %>
+            </td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+<% else %>
+  <p>No todos found matching your filters. <%= link_to "Reset filters", todo_items_path %></p>
+<% end %>
