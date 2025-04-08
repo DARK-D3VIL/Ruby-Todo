@@ -1,6 +1,7 @@
 ActiveAdmin.register TodoItem do
-  permit_params :title, :description, :due_date, :priority, :user_id
+  actions :index, :show
 
+  # Optional: Customize what fields are shown on index and show
   index do
     selectable_column
     id_column
@@ -8,25 +9,25 @@ ActiveAdmin.register TodoItem do
     column :description
     column :priority
     column :due_date
+    column :completed
     column :user
     column :created_at
-    actions
+    column :updated_at
+    actions defaults: false do |todo_item|
+      item "View", admin_todo_item_path(todo_item)
+    end
   end
 
-  filter :title
-  filter :priority
-  filter :user
-  filter :due_date
-  filter :created_at
-
-  form do |f|
-    f.inputs do
-      f.input :title
-      f.input :description
-      f.input :priority, as: :select, collection: ['High', 'Medium', 'Low']
-      f.input :due_date, as: :datetime_picker
-      f.input :user, as: :select, collection: User.all
+  show do
+    attributes_table do
+      row :title
+      row :description
+      row :priority
+      row :due_date
+      row :completed
+      row :user
+      row :created_at
+      row :updated_at
     end
-    f.actions
   end
 end
