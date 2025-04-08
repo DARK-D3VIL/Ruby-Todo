@@ -1,0 +1,37 @@
+<h1>Todo Details</h1>
+
+<p>
+  <strong>Title:</strong>
+  <%= @todo_item.title %>
+</p>
+
+<p>
+  <strong>Description:</strong>
+  <%= @todo_item.description.presence || "No description provided." %>
+</p>
+
+<p>
+  <strong>Due Date:</strong>
+  <%= @todo_item.due_date ? @todo_item.due_date.strftime("%B %d, %Y %I:%M %p") : "No due date set." %>
+</p>
+
+<p>
+  <strong>Priority:</strong>
+  <span class="badge 
+    <%= case @todo_item.priority
+        when "High" then "bg-danger"
+        when "Medium" then "bg-warning text-dark"
+        when "Low" then "bg-success"
+        else "bg-secondary"
+        end %>">
+    <%= @todo_item.priority || "Not set" %>
+  </span>
+</p>
+
+<p>
+  <strong>Created At:</strong>
+  <%= @todo_item.created_at.strftime("%B %d, %Y %I:%M %p") %>
+</p>
+
+<%= link_to 'Edit', edit_todo_item_path(@todo_item), class: "btn btn-primary" %>
+<%= link_to 'Back', todo_items_path, class: "btn btn-outline-secondary" %>
