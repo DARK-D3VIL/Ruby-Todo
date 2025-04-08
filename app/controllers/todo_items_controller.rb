@@ -5,6 +5,18 @@ class TodoItemsController < ApplicationController
   # GET /todo_items
   def index
     @todo_items = TodoItem.by_user(current_user)
+  
+    if params[:title].present?
+      @todo_items = @todo_items.where("LOWER(title) LIKE ?", "%#{params[:title].downcase}%")
+    end
+  
+    if params[:priority].present?
+      @todo_items = @todo_items.where(priority: params[:priority])
+    end
+  
+    if params[:due_date].present?
+      @todo_items = @todo_items.where("due_date <= ?", params[:due_date])
+    end
   end
 
   # GET /todo_items/1
