@@ -1,14 +1,15 @@
 class TodoItemsController < ApplicationController
   before_action :authenticate_user!
-  before_action :set_todo_item, only: %i[ show edit update destroy ]
+  before_action :set_todo_item, only: %i[show edit update destroy]
 
-  # GET /todo_items or /todo_items.json
+  # GET /todo_items
   def index
-    @todo_items = TodoItem.all
+    @todo_items = TodoItem.by_user(current_user)
   end
 
-  # GET /todo_items/1 or /todo_items/1.json
+  # GET /todo_items/1
   def show
+    # @todo_item is already set by before_action
   end
 
   # GET /todo_items/new
@@ -18,12 +19,12 @@ class TodoItemsController < ApplicationController
 
   # GET /todo_items/1/edit
   def edit
+    # @todo_item is already set by before_action
   end
 
-  # POST /todo_items or /todo_items.json
+  # POST /todo_items
   def create
     @todo_item = TodoItem.new(todo_item_params)
-
     @todo_item.user = current_user
 
     respond_to do |format|
@@ -37,7 +38,7 @@ class TodoItemsController < ApplicationController
     end
   end
 
-  # PATCH/PUT /todo_items/1 or /todo_items/1.json
+  # PATCH/PUT /todo_items/1
   def update
     respond_to do |format|
       if @todo_item.update(todo_item_params)
@@ -50,7 +51,7 @@ class TodoItemsController < ApplicationController
     end
   end
 
-  # DELETE /todo_items/1 or /todo_items/1.json
+  # DELETE /todo_items/1
   def destroy
     @todo_item.destroy
 
@@ -61,13 +62,14 @@ class TodoItemsController < ApplicationController
   end
 
   private
-    # Use callbacks to share common setup or constraints between actions.
-    def set_todo_item
-      @todo_item = TodoItem.find(params[:id])
-    end
 
-    # Only allow a list of trusted parameters through.
-    def todo_item_params
-      params.require(:todo_item).permit(:title)
-    end
+  # Set todo item scoped to current user
+  def set_todo_item
+    @todo_item = TodoItem.by_user(current_user).find(params[:id])
+  end
+
+  # Permit required parameters
+  def todo_item_params
+    params.require(:todo_item).permit(:title, :description, :due_date, :priority)
+  end
 end
